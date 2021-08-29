@@ -10,20 +10,17 @@ class ControllerUser {
 
 
      function selectUser(){
-        $sv="localhost";
-        $us="root";
-        $ps="123";
-        $bd="bankcognox";
+  
         $user=$this->objUser->getUser();
         $password=$this->objUser->getPassword();
 
         $objConnection = new ControllerConnection();
-        $objConnection->openBd($sv,$us,$ps,$bd);
+        $objConnection->openBd($GLOBALS['serv'],$GLOBALS['us'],$GLOBALS['pass'],$GLOBALS['bdd']);
         
         $commandSql="SELECT * FROM user  WHERE identification='".$user."' AND password='".$password."'";
         $recordSet=$objConnection->executeSelect($commandSql);
         $register = $recordSet->fetch_array(MYSQLI_BOTH);
-        $objUser1= new User($registro["id"], $register["identification"], $register["password"]);
+        $objUser1= new User($register["id"], $register["identification"], $register["password"]);
         $objConnection->closeBd();
 
         return $objUser1;
@@ -36,8 +33,3 @@ class ControllerUser {
 
 
 }
-
-
-
-?>
-

@@ -7,35 +7,33 @@ include("../model/User.php");
 include("../controller/ControllerUser.php");
 include("../controller/ControllerConnection.php");
 
-$id= $_POST['txtUser'];
-$password= $_POST['txtPassword'];
+$id = $_POST['txtUser'];
+$password = $_POST['txtPassword'];
 $statusOpen = "display:none";
-$button =$_POST['btn']; 
+$button = $_POST['btn'];
 
-if($button="Login"){
+if ($button = "Login") {
 
-if(isset($id) && isset($password)){
-    
-    $objUser= new User("",$id,$password);
-    $objControllerUser= new ControllerUser($objUser);
-    $objUser=$objControllerUser->selectUser();
+    if (isset($id) && isset($password)) {
 
-    $_SESSION['identification']=$objUser->getUser();
-    $_SESSION['password']= $objUser->getPassword();
+        $objUser = new User("", $id, $password);
+        $objControllerUser = new ControllerUser($objUser);
+        $objUser = $objControllerUser->selectUser();
 
-	if($objUser->getUser()!=null){
+        $_SESSION['identification'] = $objUser->getUser();
+        $_SESSION['password'] = $objUser->getPassword();
 
-    header('Location:HomeBank.php');
+        if ($objUser->getUser() != null) {
 
- }else{
-    $statusOpen="display:block";
- }
-  
-}
+            header('Location:HomeBank.php');
+        } else {
+            $statusOpen = "display:block";
+        }
+    }
 }
 
 
-echo"
+echo "
 <!DOCTYPE html>
 <html>
 <head>
@@ -64,9 +62,16 @@ function validate(){
         return false;
     }
 
-    if(password.length>4){
+    if(isNaN(password)){
 
-        alert('Clave debe ser menor a 4 cifras');
+        alert('Clave debe ser numerica');
+        document.getElementById(\"password\").value = '';
+        return false;
+    }
+
+    if(password.length>4 ||password.length<4 ){
+
+        alert('Clave debe ser igual a 4 cifras');
         document.getElementById(\"password\").value = '';
         return false;
     }
@@ -209,4 +214,3 @@ margin-left: 4px;
     </body>
 </html>
 ";
-?>

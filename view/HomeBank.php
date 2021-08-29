@@ -12,6 +12,8 @@ header('Location:Index.php');
                       include("../controller/ControllerUser.php");
                       include("../model/TransactionBank.php");
 
+$ownerAccount ="ownerAccount";
+$thirdAccount="thirAccount";
 
                   
                 
@@ -32,7 +34,7 @@ echo"
 </head>
     <body>
 
-    <form action=\"\" method=\"POST\">
+    <form action=\"TransactionBank.php\" method=\"POST\">
     <nav class=\"navbar navbar-expand-lg navbar-dark bg-dark\">
     <button class=\"navbar-toggler\" type=\"button\" data-toggle=\"collapse\" data-target=\"#navbarTogglerDemo01\" aria-controls=\"navbarTogglerDemo01\" aria-expanded=\"false\" aria-label=\"Toggle navigation\">
       <span class=\"navbar-toggler-icon\"></span>
@@ -50,8 +52,9 @@ echo"
                 Transacciones Bancarias
                 </a>
                 <div class=\"dropdown-menu\" aria-labelledby=\"navbarDropdownMenuLink\">
-          <a class=\"dropdown-item\"style=\"\" href=\"TransactionBank.php\">Cuentas propias</a>
+                <a class=\"dropdown-item\"style=\"\" href=\"TransactionBank.php?type=$ownerAccount\">Cuentas propias</a>
                 <a class=\"dropdown-item\" style=\"\" href=\"TransactionBank.php\">Cuentas terceros</a>
+                <a class=\"dropdown-item\" style=\"\" href=\"ListTransaction.php\">Ver transacciones</a>
 
               </li>
           </ul>
@@ -67,5 +70,3 @@ echo"
   </body>
   </html>
 ";
-
-?>

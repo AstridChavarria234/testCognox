@@ -1,189 +1,194 @@
-<?php
+  <?php
 
-error_reporting(E_ALL ^ E_NOTICE);
-session_start();
+  error_reporting(E_ALL ^ E_NOTICE);
+  session_start();
 
-if(!isset($_SESSION['identification']) && !isset($_SESSION['password']))
-header('Location:Index.php');
+  if (!isset($_SESSION['identification']) && !isset($_SESSION['password']))
+    header('Location:Index.php');
 
-include("../controller/configBd.php");
-                      include("../controller/ControllerConnection.php");
-                      include("../model/User.php");
-                      include("../controller/ControllerUser.php");
-                      include("../model/Account.php");
-                      include("../controller/ControllerAccount.php");
-                      include("../model/Transaction.php");
-                      include("../controller/ControllerTransaction.php");
+  include("../controller/configBd.php");
+  include("../controller/ControllerConnection.php");
+  include("../model/User.php");
+  include("../controller/ControllerUser.php");
+  include("../model/Account.php");
+  include("../controller/ControllerAccount.php");
+  include("../model/Transaction.php");
+  include("../controller/ControllerTransaction.php");
 
-                      $button =$_POST['transfer']; 
-                      $statusOpen = "display:none";
-                      $statusMoney = "display:none";
-                      $statusOwner = "display:none";
-        
-                      $objControllerListAccount= new ControllerAccount("");
-                      $data=$objControllerListAccount->listAccount($_SESSION['identification']);
+  $button = $_POST['transfer'];
+  $statusMoney = "display:none";
+  $statusOwner = "display:none";
+  $statusTransaction = "display:none";
 
-                      if(isset($button)){
-                      $accountOrigen=$_POST['txtAccountOrigen']; 
-                      $accountDestiny=$_POST['txtAccountDestiny'];
-                      $money=$_POST['txtMoney'];
-                      $objAccountDestiny= new Account($accountDestiny,$money,"");
-                      $objAccountOrigen= new Account($accountOrigen,$money,$SESSION["identification"]);
-        
-                      $objControllerAccountOrigen= new ControllerAccount($objAccountOrigen);
-                      $objResultAccountOrigen=$objControllerAccountOrigen->select();
+  $objControllerListAccount = new ControllerAccount("");
+  $data = $objControllerListAccount->listAccount($_SESSION['identification']);
 
-                      $objControllerResultDestiny= new ControllerAccount($objAccountDestiny);
-                      $objResultAccountDestiny=$objControllerResultDestiny->select();
-                     
-            if(!empty($objResultAccountDestiny) && $objResultAccountDestiny!=null){
-            
-              if($objResultAccountDestiny->getIdUser()==$objResultAccountOrigen->getIdUser()){
-                if($objResultAccountOrigen->getMoney()<$money){
-                    $statusMoney = "display:block";
-                 }else{
+  if (isset($button)) {
+    $accountOrigen = $_POST['txtAccountOrigen'];
+    $accountDestiny = $_POST['txtAccountDestiny'];
+    $money = $_POST['txtMoney'];
+    $objAccountDestiny = new Account($accountDestiny, $money, "");
+    $objAccountOrigen = new Account($accountOrigen, $money, $SESSION["identification"]);
 
-                    $objControllerAccountDestiny= new ControllerAccount($objAccountDestiny);
-                    $objControllerAccountDestiny->updateAccount();
-                    $objControllerAccountOrigen->updateOrigenAccount();
-                    $objTransaction= new Transaction($accountDestiny,$money,getDate());
-                 }
-          
-            }else{
-              $statusOwner = "display:block";
-  
-            }
-            }
-        
-                    }
+    $objControllerAccountOrigen = new ControllerAccount($objAccountOrigen);
+    $objResultAccountOrigen = $objControllerAccountOrigen->select();
 
-                      echo"
-                      <!DOCTYPE html>
-                      <html>
-                      <head>
-                      <meta charset='UTF-8'>
-                
-                      <link rel=\"StyleSheet\" href=\"https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css\" type=\"text/css\">
-                      <script src=\"https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js\"></script>
-                      <script src=\"https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js\"></script>
-                      <script src=\"https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js\"></script>
-                      <title>Proveedor</title>
-                      <script type=\"text/javascript\">
+    $objControllerResultDestiny = new ControllerAccount($objAccountDestiny);
+    $objResultAccountDestiny = $objControllerResultDestiny->select();
 
-                      function validate(){
-                      
-                              var accountOrigen =document.getElementById(\"txtAccountOrigen\").value;
-                              var accountDestiny =document.getElementById(\"txtAccountDestiny\").value;
-                              var money =document.getElementById(\"txtMoney\").value;
-                          
+    if (!empty($objResultAccountDestiny) && $objResultAccountDestiny != null) {
 
-                            if(accountOrigen ==accountDestiny){
+      if ($objResultAccountDestiny->getIdUser() == $objResultAccountOrigen->getIdUser()) {
+        if ($objResultAccountOrigen->getMoney() < $money) {
+          $statusMoney = "display:block";
+        } else {
 
-                                alert('La cuenta de origen es igual a la destino');
-                                return false;
-                            }
-    
-                             if(money<=0){
-                                alert('El valor debe ser mayor a 0 para transferir');
-                                return false;
-                            }
-                 
+          $objControllerAccountDestiny = new ControllerAccount($objAccountDestiny);
+          $objControllerAccountDestiny->updateAccount();
+          $objControllerAccountOrigen->updateOrigenAccount();
+          $codeTransaction = mt_rand(10000, 20000);
+          $objTransaction = new Transaction($codeTransaction, $accountDestiny, $money, getDate());
+
+          echo "
+                  <script>
+                  alert('Numero de transaccion '+$codeTransaction);
+                  </script>
+                  ";
+        }
+      } else {
+        $statusOwner = "display:block";
+      }
+    }
+  }
+
+  echo "
+                        <!DOCTYPE html>
+                        <html>
+                        <head>
+                        <meta charset='UTF-8'>
+                  
+                        <link rel=\"StyleSheet\" href=\"https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css\" type=\"text/css\">
+                        <script src=\"https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js\"></script>
+                        <script src=\"https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js\"></script>
+                        <script src=\"https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js\"></script>
+                        <title>Proveedor</title>
+                        <script type=\"text/javascript\">
+
+                        function validate(){
                         
-                      }
-                      </script>
-                    
-                      </head>
-                          <body>
+                                var accountOrigen =document.getElementById(\"txtAccountOrigen\").value;
+                                var accountDestiny =document.getElementById(\"txtAccountDestiny\").value;
+                                var money =document.getElementById(\"txtMoney\").value;
+                            
+
+                              if(accountOrigen ==accountDestiny){
+
+                                  alert('La cuenta de origen es igual a la destino');
+                                  return false;
+                              }
+      
+                              if(money<=0){
+                                  alert('El valor debe ser mayor a 0 para transferir');
+                                  return false;
+                              }
+                  
+                          
+                        }
+                        </script>
                       
-                          <form action=\"\" method=\"POST\">
-                <nav class=\"navbar navbar-expand-lg navbar-dark bg-dark\">
-                <button class=\"navbar-toggler\" type=\"button\" data-toggle=\"collapse\" data-target=\"#navbarTogglerDemo01\" aria-controls=\"navbarTogglerDemo01\" aria-expanded=\"false\" aria-label=\"Toggle navigation\">
-                  <span class=\"navbar-toggler-icon\"></span>
-                </button>
-                <div class=\"collapse navbar-collapse\" id=\"navbarToggler\">
-                <a class=\"navbar-brand\" href=\"#\">HOME BANK</a>
-                  <ul class=\"navbar-nav mr-auto mt-2 mt-lg-0\">
-                  </li>
-        
-                <li class=\"nav-item dropdown\">
-        
-                <a class=\"nav-link dropdown-toggle\" href=\"#\" id=\"navbarDropdownMenuLink\" role=\"button\" data-toggle=\"dropdown\" aria-haspopup=\"true\" aria-expanded=\"false\">
-                Transacciones Bancarias
-                </a>
-                <div class=\"dropdown-menu\" aria-labelledby=\"navbarDropdownMenuLink\">
-          <a class=\"dropdown-item\"style=\"\" href=\"TransactionBank.php\">Cuentas propias</a>
-                <a class=\"dropdown-item\" style=\"\" href=\"TransactionBank.php\">Cuentas terceros</a>
+                        </head>
+                            <body>
+                        
+                            <form action=\"\" method=\"POST\">
+                  <nav class=\"navbar navbar-expand-lg navbar-dark bg-dark\">
+                  <button class=\"navbar-toggler\" type=\"button\" data-toggle=\"collapse\" data-target=\"#navbarTogglerDemo01\" aria-controls=\"navbarTogglerDemo01\" aria-expanded=\"false\" aria-label=\"Toggle navigation\">
+                    <span class=\"navbar-toggler-icon\"></span>
+                  </button>
+                  <div class=\"collapse navbar-collapse\" id=\"navbarToggler\">
+                  <a class=\"navbar-brand\" href=\"#\">HOME BANK</a>
+                    <ul class=\"navbar-nav mr-auto mt-2 mt-lg-0\">
+                    </li>
+          
+                  <li class=\"nav-item dropdown\">
+          
+                  <a class=\"nav-link dropdown-toggle\" href=\"#\" id=\"navbarDropdownMenuLink\" role=\"button\" data-toggle=\"dropdown\" aria-haspopup=\"true\" aria-expanded=\"false\">
+                  Transacciones Bancarias
+                  </a>
+                  <div class=\"dropdown-menu\" aria-labelledby=\"navbarDropdownMenuLink\">
+                 <a class=\"dropdown-item\"style=\"\" href=\"TransactionBank.php?type=$ownerAccount\">Cuentas propias</a>
+                  <a class=\"dropdown-item\" style=\"\" href=\"TransactionBank.php\">Cuentas terceros</a>
+                  <a class=\"dropdown-item\" style=\"\" href=\"ListTransaction.php\">Ver transacciones</a>
 
-              </li>
-                     
-                    </ul>
-                  <form class=\"form-inline my-2 my-lg-0\">
-                    <a class=\"btn btn-outline-success my-2 my-sm-0\" href=\"CerrarSesion.php\" style=\"color:white\">Cerrar Sesion
-                    </a>
-                  </form>
-                </div>
-              </nav>
-              </form>
-        
-              <form method=\"POST\" enctype=\"multipart/form-data\" onsubmit=\"return validate();\"> <br><br>
-
-              <div class=\"container\" id=\"mi_tabla\">
-              <br><br><br>
-              <table class=\"table table-hover table-success tableFixHead\" >
-                <thead>
-                  <tr class=\"\">
-                    <th scope=\"col\">Transaccion Bancaria</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    
-                    <td>
-                    <label class=\"form-control\">Cuenta origen</label>
-                    <select id=\"txtAccountOrigen\" name=\"txtAccountOrigen\"
-                    class=\"form-control\" aria-label=\".form-select-sm example\">
-
-  ";
-  for($i=0;$i<count($data);$i++)
-      {
-        echo '<option value='.$data[$i][0].'>'.$data[$i][0].'</option >';
-      } 
-
-  echo"
-</select>
-                    </td>
-
+                </li>
                       
-                    <td><input type=\"text\" class=\"form-control\" id=\"txtAccountDestiny\" name=\"txtAccountDestiny\" placeholder=\"Cuenta Destino\" required>
-                    <br></td>
+                      </ul>
+                    <form class=\"form-inline my-2 my-lg-0\">
+                      <a class=\"btn btn-outline-success my-2 my-sm-0\" href=\"CerrarSesion.php\" style=\"color:white\">Cerrar Sesion
+                      </a>
+                    </form>
+                  </div>
+                </nav>
+                </form>
+          
+                <form method=\"POST\" enctype=\"multipart/form-data\" onsubmit=\"return validate();\"> <br><br>
 
+                <div class=\"container\" id=\"mi_tabla\">
+                <br><br><br>
+  S              <table class=\"table table-hover table-success tableFixHead\" >
+                  <thead>
+                    <tr class=\"\">
+                      <th scope=\"col\">Transaccion Bancaria</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
                       
-                    <td><input type=\"text\" class=\"form-control\" id=\"txtMoney\" name=\"txtMoney\" placeholder=\"Monto a transferir\" required>
-                    <br></td>
-                    <td> <button type=\"submit\" class=\"btn btn-primary\" value=\"transfer\"  name=\"transfer\">Transferir</button> <td>
-                  </tr>
-        
-                  <tr>
-                
-                </div>
-                  <tr>
+                      <td>
+                      <label class=\"form-control\">Cuenta origen</label>
+                      <select id=\"txtAccountOrigen\" name=\"txtAccountOrigen\"
+                      class=\"form-control\" aria-label=\".form-select-sm example\">
 
-                  <tr>
-                  <td>  <div class=\"alert alert-warning\" role=\"alert\" id=\"txtStatusOpen\" style=\"$statusMoney\">
-                  <strong>Oh!</strong> No hay cupo suficiente en la cuenta origen
-                </div>
-                  <tr>
-                  <tr>
-                  <td>  <div class=\"alert alert-warning\" role=\"alert\" id=\"txtStatusOpen\" style=\"$statusOwner\">
-                  <strong>Oh!</strong> La cuenta destino no es propia
-                </div>
-                  <tr>
-                
-                </tbody>
-              </table>
-            </div>
-              </form>                    
-                          </body>
-                      </html>
-                      ";
-?>
+    ";
+  for ($i = 0; $i < count($data); $i++) {
+    echo '<option value=' . $data[$i][0] . '>' . $data[$i][0] . '</option >';
+  }
+
+  echo "
+  </select>
+                      </td>
+
+                        
+                      <td><input type=\"text\" class=\"form-control\" id=\"txtAccountDestiny\" name=\"txtAccountDestiny\" placeholder=\"Cuenta Destino\" required>
+                      <br></td>
+
+                        
+                      <td><input type=\"text\" class=\"form-control\" id=\"txtMoney\" name=\"txtMoney\" placeholder=\"Monto a transferir\" required>
+                      <br></td>
+                      <td> <button type=\"submit\" class=\"btn btn-primary\" value=\"transfer\"  name=\"transfer\">Transferir</button> <td>
+                    </tr>
+          
+                    <tr>
+                  
+                  </div>
+                    <tr>
+
+                    <tr>
+                    <td>  <div class=\"alert alert-warning\" role=\"alert\" style=\"$statusMoney\">
+                    <strong>Oh!</strong> No hay cupo suficiente en la cuenta origen
+                  </div>
+                    <tr>
+                    <tr>
+                    <td>  <div class=\"alert alert-warning\" role=\"alert\"  style=\"$statusOwner\">
+                    <strong>Oh!</strong> La cuenta destino no es propia
+                  </div>
+                    <tr>
+
+                  
+                  </tbody>
+                </table>
+              </div>
+                </form>                    
+                            </body>
+                        </html>
+                        ";
+  ?>

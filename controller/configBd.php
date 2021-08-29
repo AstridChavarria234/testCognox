@@ -1,7 +1,7 @@
 <?php
 $GLOBALS['serv']="localhost";
-$GLOBALS['usua']="root";
-$GLOBALS['pass']="";
-$GLOBALS['bdat']="bdproyectoaulav1";
+$GLOBALS['us']="root";
+$GLOBALS['pass']="1234";
+$GLOBALS['bdd']="bankcognox";
 
 ?>

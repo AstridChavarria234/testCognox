@@ -22,11 +22,10 @@ class ControlerTransaction {
         $dateAccount=$this->objTransaction->getDate();
       
         $objConnection = new ControllerConnection();
-        $objConnection->openBd($sv,$us,$ps,$bd);
+        $objConnection->openBd($GLOBALS['serv'],$GLOBALS['us'],$GLOBALS['pass'],$GLOBALS['bdd']);
 
         $commandSql="INSERT INTO transaction(numberAccount,money,date) VALUES('".$number."','".$moneyAccount."',".$dateAccount.")";
-        $objConnection->ejecutarComandoSql($commandSql);
+        $objConnection->executeCommandSql($commandSql);
         $objConnection->closeBd();
     }
 }
-    ?>
