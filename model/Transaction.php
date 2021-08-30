@@ -3,22 +3,26 @@
 
 class Transaction{
     var $code;
-    var $numberAccount;
+    var $numberAccountOrigen;
+    var $numberAccountDestiny;
     var $money;
     var $date;
-    function __construct($code,$numberAccount,$money,$date)
+    function __construct($code,$numberAccountOrigen,$numberAccountDestiny,$money,$date)
     {
         $this->code=$code;
-        $this->numberAccount=$numberAccount;
+        $this->numberAccountOrigen=$numberAccountOrigen;
+        $this->numberAccountDestiny=$numberAccountDestiny;
+
         $this->money=$money;
         $this->date=$date;
     }
 
     function getCode() { return $this->code; }
 
-    function getNumberAccount() { return $this->numberAccount; }
+    function getNumberAccountOrigen() { return $this->numberAccountOrigen; }
+    function getNumberAccountDestiny() { return $this->numberAccountDestiny; }
 
-    function setMoney($money) { $this->setMoney = $money; }
+
     function getMoney() { return $this->money; }
 
 

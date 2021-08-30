@@ -1,7 +1,7 @@
   <?php
 
-  error_reporting(E_ALL ^ E_NOTICE);
-  session_start();
+error_reporting(E_ALL ^ E_NOTICE ^ E_WARNING);
+session_start();
 
   if (!isset($_SESSION['identification']) && !isset($_SESSION['password']))
     header('Location:Index.php');
@@ -14,11 +14,19 @@
   include("../controller/ControllerAccount.php");
   include("../model/Transaction.php");
   include("../controller/ControllerTransaction.php");
+  include("../utils/Utils.php");
+
+
+  $ownerAccount = "ownerAccount";
+  $thirdAccount = "thirdAccount";
 
   $button = $_POST['transfer'];
   $statusMoney = "display:none";
   $statusOwner = "display:none";
   $statusTransaction = "display:none";
+  $statusThird = "display:none";
+  $statusExists = "display:none";
+  $statusActive = "display:none";
 
   $objControllerListAccount = new ControllerAccount("");
   $data = $objControllerListAccount->listAccount($_SESSION['identification']);
@@ -26,9 +34,10 @@
   if (isset($button)) {
     $accountOrigen = $_POST['txtAccountOrigen'];
     $accountDestiny = $_POST['txtAccountDestiny'];
+
     $money = $_POST['txtMoney'];
-    $objAccountDestiny = new Account($accountDestiny, $money, "");
-    $objAccountOrigen = new Account($accountOrigen, $money, $SESSION["identification"]);
+    $objAccountDestiny = new Account($accountDestiny, $money, "","");
+    $objAccountOrigen = new Account($accountOrigen, $money, $SESSION["identification"],"");
 
     $objControllerAccountOrigen = new ControllerAccount($objAccountOrigen);
     $objResultAccountOrigen = $objControllerAccountOrigen->select();
@@ -36,30 +45,50 @@
     $objControllerResultDestiny = new ControllerAccount($objAccountDestiny);
     $objResultAccountDestiny = $objControllerResultDestiny->select();
 
-    if (!empty($objResultAccountDestiny) && $objResultAccountDestiny != null) {
 
-      if ($objResultAccountDestiny->getIdUser() == $objResultAccountOrigen->getIdUser()) {
+
+    if (!empty($objResultAccountDestiny->getIdUser()) && $objResultAccountDestiny->getIdUser() != null) {
+      if($objResultAccountDestiny->getActive()==1 && $objResultAccountOrigen->getActive()==1){
         if ($objResultAccountOrigen->getMoney() < $money) {
           $statusMoney = "display:block";
         } else {
-
-          $objControllerAccountDestiny = new ControllerAccount($objAccountDestiny);
-          $objControllerAccountDestiny->updateAccount();
-          $objControllerAccountOrigen->updateOrigenAccount();
-          $codeTransaction = mt_rand(10000, 20000);
-          $objTransaction = new Transaction($codeTransaction, $accountDestiny, $money, getDate());
-
-          echo "
-                  <script>
-                  alert('Numero de transaccion '+$codeTransaction);
-                  </script>
-                  ";
+          if ($_GET["type"] == "ownerAccount") {
+            if ($objResultAccountDestiny->getIdUser() == $objResultAccountOrigen->getIdUser()) {
+              $objUtils = new Utils();
+              $objUtils->makeTransfer(
+                $objAccountDestiny,
+                $objControllerAccountOrigen,
+                $accountOrigen,
+                $accountDestiny,
+                $money
+              );
+            } else {
+              $statusOwner = "display:block";
+            }
+          }
+  
+          if ($_GET["type"] == "thirdAccount") {
+            if ($objResultAccountDestiny->getIdUser() != $objResultAccountOrigen->getIdUser()) {
+              $objUtils = new Utils();
+              $objUtils->makeTransfer($objAccountDestiny, $objControllerAccountOrigen, $accountOrigen, $accountDestiny, $money);
+            } else {
+              $statusThird = "display:block";
+            }
+          }
         }
-      } else {
-        $statusOwner = "display:block";
+      }else{
+        $statusActive = "display:block";
+
       }
+     
+    } else {
+      $statusExists = "display:block";
     }
   }
+
+
+
+
 
   echo "
                         <!DOCTYPE html>
@@ -71,7 +100,7 @@
                         <script src=\"https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js\"></script>
                         <script src=\"https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js\"></script>
                         <script src=\"https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js\"></script>
-                        <title>Proveedor</title>
+                        <title>HomeBank</title>
                         <script type=\"text/javascript\">
 
                         function validate(){
@@ -115,8 +144,8 @@
                   Transacciones Bancarias
                   </a>
                   <div class=\"dropdown-menu\" aria-labelledby=\"navbarDropdownMenuLink\">
-                 <a class=\"dropdown-item\"style=\"\" href=\"TransactionBank.php?type=$ownerAccount\">Cuentas propias</a>
-                  <a class=\"dropdown-item\" style=\"\" href=\"TransactionBank.php\">Cuentas terceros</a>
+                  <a class=\"dropdown-item\"style=\"\" href=\"TransactionBank.php?type=$ownerAccount\">Cuentas propias</a>
+                  <a class=\"dropdown-item\" style=\"\" href=\"TransactionBank.php?type=$thirdAccount\"\">Cuentas terceros</a>
                   <a class=\"dropdown-item\" style=\"\" href=\"ListTransaction.php\">Ver transacciones</a>
 
                 </li>
@@ -134,7 +163,7 @@
 
                 <div class=\"container\" id=\"mi_tabla\">
                 <br><br><br>
-  S              <table class=\"table table-hover table-success tableFixHead\" >
+               <table class=\"table table-hover table-success tableFixHead\" >
                   <thead>
                     <tr class=\"\">
                       <th scope=\"col\">Transaccion Bancaria</th>
@@ -180,6 +209,24 @@
                     <tr>
                     <td>  <div class=\"alert alert-warning\" role=\"alert\"  style=\"$statusOwner\">
                     <strong>Oh!</strong> La cuenta destino no es propia
+                  </div>
+                    <tr>
+
+                    <tr>
+                    <td>  <div class=\"alert alert-warning\" role=\"alert\"  style=\"$statusThird\">
+                    <strong>Oh!</strong> La cuenta destino no es de un tercero
+                  </div>
+                    <tr>
+
+                    <tr>
+                    <td>  <div class=\"alert alert-warning\" role=\"alert\"  style=\"$statusExists\">
+                    <strong>Oh!</strong> La cuenta destino no existe
+                  </div>
+                    <tr>
+
+                    <tr>
+                    <td>  <div class=\"alert alert-warning\" role=\"alert\"  style=\"$statusActive\">
+                    <strong>Oh!</strong> La cuenta no esta activa
                   </div>
                     <tr>
 

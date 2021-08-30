@@ -1,4 +1,4 @@
-<?php
+ <?php
          error_reporting(E_ALL ^ E_NOTICE ^ E_WARNING);
 session_start();
 
@@ -13,7 +13,7 @@ header('Location:Index.php');
                       include("../model/TransactionBank.php");
 
 $ownerAccount ="ownerAccount";
-$thirdAccount="thirAccount";
+$thirdAccount="thirdAccount";
 
                   
                 
@@ -53,7 +53,7 @@ echo"
                 </a>
                 <div class=\"dropdown-menu\" aria-labelledby=\"navbarDropdownMenuLink\">
                 <a class=\"dropdown-item\"style=\"\" href=\"TransactionBank.php?type=$ownerAccount\">Cuentas propias</a>
-                <a class=\"dropdown-item\" style=\"\" href=\"TransactionBank.php\">Cuentas terceros</a>
+                <a class=\"dropdown-item\" style=\"\" href=\"TransactionBank.php?type=$thirdAccount\"\">Cuentas terceros</a>
                 <a class=\"dropdown-item\" style=\"\" href=\"ListTransaction.php\">Ver transacciones</a>
 
               </li>
@@ -70,3 +70,4 @@ echo"
   </body>
   </html>
 ";
+ 

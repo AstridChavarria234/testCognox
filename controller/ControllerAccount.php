@@ -11,18 +11,21 @@ class ControllerAccount
 	function updateAccount()
 	{
 
-
 		$numberAccount = $this->objAccount->getNumberAccount();
 		$money = $this->objAccount->getMoney();
-		$idUser = $this->objAccount->getIdUser();
 
-		$objConnection = new ControllerConnection();
-		$objConnection->openBd($GLOBALS['serv'], $GLOBALS['us'], $GLOBALS['pass'], $GLOBALS['bdd']);
+		$sv="localhost";
+        $us="root";
+        $ps="";
+        $bd="bankcognox";
+
+        $objConnection=new ControllerConnection();
+        $objConnection->openBd($sv,$us,$ps,$bd);
 
 		$commandSql = "SELECT * FROM account  WHERE numberAccount='" . $numberAccount . "'";
 		$recordSet = $objConnection->executeSelect($commandSql);
 		$register = $recordSet->fetch_array(MYSQLI_BOTH);
-		$objRResultAccount = new Account($register["numberAccount"], $register["money"], $register["idUser"]);
+		$objRResultAccount = new Account($register["numberAccount"], $register["money"], $register["idUser"],$register["active"]);
 
 
 		$sumMoneyAccountDestiny = $money + $objRResultAccount->getMoney();
@@ -46,12 +49,12 @@ class ControllerAccount
 		$idUser = $this->objAccount->getIdUser();
 
 		$objConnection = new ControllerConnection();
-		$objConnection->openBd($GLOBALS['serv'], $GLOBALS['us'], $GLOBALS['pass'], $GLOBALS['bdd']);
+        $objConnection->openBd($sv,$us,$ps,$bd);
 
 		$commandSql = "SELECT * FROM account  WHERE numberAccount='" . $numberAccount . "'";
 		$recordSet = $objConnection->executeSelect($commandSql);
 		$register = $recordSet->fetch_array(MYSQLI_BOTH);
-		$objRResultAccount = new Account($register["numberAccount"], $register["money"], $register["idUser"]);
+		$objRResultAccount = new Account($register["numberAccount"], $register["money"], $register["idUser"],$register["active"]);
 
 		$quiteMoneyAccountOrigen = $objRResultAccount->getMoney() - $money;
 		$commandSql = "UPDATE account SET money=$quiteMoneyAccountOrigen WHERE numberAccount='" . $numberAccount . "'";
@@ -72,14 +75,14 @@ class ControllerAccount
 		$numberAccount = $this->objAccount->getNumberAccount();
 
 		$objConnection = new ControllerConnection();
-		$objConnection->openBd($GLOBALS['serv'], $GLOBALS['us'], $GLOBALS['pass'], $GLOBALS['bdd']);
+        $objConnection->openBd($sv,$us,$ps,$bd);
 		print("ingreso aqui");
 		print($numberAccount);
 
-		$commandSql = "SELECT * FROM account  WHERE numberAccount='" . $numberAccount . "'";
+		$commandSql = "SELECT * FROM account  WHERE  numberAccount='" . $numberAccount . "' ";
 		$recordSet = $objConnection->executeSelect($commandSql);
 		$register = $recordSet->fetch_array(MYSQLI_BOTH);
-		$objRResultAccount = new Account($register["numberAccount"], $register["money"], $register["idUser"]);
+		$objRResultAccount = new Account($register["numberAccount"], $register["money"], $register["idUser"],$register["active"]);
 		$objConnection->closeBd();
 
 		return $objRResultAccount;
@@ -97,9 +100,8 @@ class ControllerAccount
 		$ps = "123";
 		$bd = "bankCognox";
 		$objConnection = new ControllerConnection();
-		$objConnection->openBd($GLOBALS['serv'], $GLOBALS['us'], $GLOBALS['pass'], $GLOBALS['bdd']);
-		$commandSql = "SELECT * FROM account WHERE idUser = $identification";
-
+        $objConnection->openBd($sv,$us,$ps,$bd);
+		$commandSql = "SELECT * FROM account WHERE idUser = $identification AND active=1";
 
 		$recordSet = $objConnection->executeSelect($commandSql);
 
