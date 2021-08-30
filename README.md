@@ -12,7 +12,7 @@
  
  *4. Ubicar el proyecto en la carpeta htdocs del gestor de paquetes, con el fin de ejecutar en localHost<br />
  
- *5. Hacer switch a la rama baster del repositorio
+ *5. Hacer switch a la rama master del repositorio
  
  
  
