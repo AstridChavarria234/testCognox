@@ -76,8 +76,6 @@ class ControllerAccount
 
 		$objConnection = new ControllerConnection();
         $objConnection->openBd($sv,$us,$ps,$bd);
-		print("ingreso aqui");
-		print($numberAccount);
 
 		$commandSql = "SELECT * FROM account  WHERE  numberAccount='" . $numberAccount . "' ";
 		$recordSet = $objConnection->executeSelect($commandSql);
